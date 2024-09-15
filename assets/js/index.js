@@ -20,7 +20,7 @@ class DB
                     mainDiv.className = 'col-sm-4 mb-2'
 
                     let a = document.createElement('a')
-                    a.href = '/pages/detail.html?' + result[0]
+                    a.href = '/detail.html?' + result[0]
                     a.className = 'card'
 
                     let img = document.createElement('img')

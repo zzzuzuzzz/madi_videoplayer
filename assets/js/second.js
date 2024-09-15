@@ -19,6 +19,11 @@ class DB
                     let mainDiv = document.createElement('div')
                     mainDiv.className = 'col-sm-8 mb-2 w-75'
                     mainDiv.dataset.id = result[0]
+                    mainDiv.id = result[0]
+
+                    if (result[0] == window.location.search.split('')[1]) {
+                        mainDiv.style = 'background: grey'
+                    }
 
                     let a = document.createElement('div')
                     a.href = '/pages/detail.html?' + result[0]
