@@ -9,6 +9,11 @@
 
 	<script type="text/javascript" src="/assets/js/jquery.min.js"></script>
 	<script type="text/javascript" src="/assets/js/second.js"></script>
+	<style>
+		#videoPlayer {
+			position: relative;
+		}
+	</style>
 </head>
 <body>
 	<nav class="navbar navbar-expand-lg bg-body-tertiary">
@@ -35,13 +40,15 @@
 		<div class="card mb-3" id="video" style="width: 65%">
 			<div class="card">
 				<video src="" class="card-img-top" id="videoPlayer" style="height: 50vh" width="auto" autobuffer controls autoplay></video>
+				<img src="" class="card-img-top" id="imgPlayer" style="height: 50vh" width="auto">
 				<div class="card-body">
 					<h5 class="card-title"></h5>
 					<p class="card-text"></p>
 				</div>
 				<div class="card-body">
-					<a href="#" class="card-link" id="last-video">Предыдущие видео</a>
-					<a href="#" class="card-link" id="next-video">Следующие видео</a>
+					<button class="card-link" id="last-video" name="">Предыдущие видео</button>
+					<button class="card-link" id="next-video" name="">Следующие видео</button>
+					<button class="card-link" id="autoplay" style="background-color: red; color: black" name="">Автоплей</button>
 				</div>
 			</div>
 		</div>
@@ -56,6 +63,40 @@
 		</div>
 	</footer>
 	<script>
+		let videoArray = [];
+		let autoplay = false;
+		
+		function whyType(type, src) {
+			console.log(src)
+			if (type == 'video') {
+				document.getElementById('imgPlayer').src = ''
+				anime('imgPlayer')
+				document.getElementById('imgPlayer').style = 'height: 50vh; display: none'
+				document.getElementById('videoPlayer').style = 'height: 50vh'
+				document.getElementById('videoPlayer').src = '/assets/videos/' + src + '.mp4'
+			} else if (type == 'img') {
+				document.getElementById('videoPlayer').src = ''
+				anime('videoPlayer')
+				document.getElementById('videoPlayer').style = 'height: 50vh; display: none'
+				document.getElementById('imgPlayer').style = 'height: 50vh'
+				document.getElementById('imgPlayer').src = '/assets/images/' + src + '.png'
+				if (autoplay) {
+					setTimeout(videoSwipe, 5000, Number(window.location.search.split('')[1]) + 1, 'next-video')
+				}
+			}
+		}
+
+		function changeName(id) {
+			document.getElementById('last-video').name = (Number(id) - 1)
+			document.getElementById('next-video').name = (Number(id) + 1)
+
+			if (videoArray.length == id) {
+				document.getElementById('next-video').name = 1
+			} else if (id == 1) {
+				document.getElementById('last-video').name = videoArray.length
+			}
+		}
+
 		function view()
 		{
 			let xhr = new XMLHttpRequest();
@@ -78,18 +119,15 @@
 						if (result[0] == id) {
 							document.getElementsByClassName('card-title')[0].textContent = result[1]
 							document.getElementsByClassName('card-text')[0].textContent = result[2]
-							document.getElementById('videoPlayer').src = '/assets/videos/' + result[3] + '.mp4'
+							whyType(result[4], result[3])
 						}
 
-						document.getElementById('last-video').href = 'detail.html?' + (id - 1)
-						document.getElementById('next-video').href = 'detail.html?' + (id + 1)
+						videoArray.push(result);
 
-						if (videoId == id) {
-							document.getElementById('next-video').href = 'detail.html?1'
-						} else if (id == 1) {
-							document.getElementById('last-video').href = 'detail.html?' + videoId
-						}
+						changeName(id)
 					});
+
+					console.log(videoArray)
 
 					let el = document.getElementById(id);
 					el.scrollIntoView()
@@ -98,9 +136,70 @@
 		}
 		view()
 
+		function videoSwipePre(e) {
+			let name = Number(e.target.name)
+			let id = e.target.id
+			videoSwipe(name, id)
+		}
+
+		function videoSwipe(name, id) {
+			history.pushState(null, null, 'detail.html?' + name)
+			if (id == 'last-video') {
+				changeName(name)
+			} else {
+				changeName(name)
+			}
+
+			let nowVideo = videoArray[Number(name) - 1]
+
+			document.getElementsByClassName('card-title')[0].textContent = nowVideo[1]
+			document.getElementsByClassName('card-text')[0].textContent = nowVideo[2]
+			document.getElementById(Number(name)).scrollIntoView()
+
+			whyType(nowVideo[4], nowVideo[3])
+		}
+
+		document.getElementById('last-video').addEventListener('click', function (e) {
+			videoSwipePre(e)
+		})
+		document.getElementById('next-video').addEventListener('click', function (e) {
+			videoSwipePre(e)
+		})
+		document.getElementById('autoplay').addEventListener('click', function (e) {
+			if (autoplay) {
+				autoplay = false;
+				document.getElementById('autoplay').style = 'background-color: red; color: black'
+			} else {
+				autoplay = true;
+				document.getElementById('autoplay').style = 'background-color: green; color: black'
+			}
+		})
+
 		document.getElementById('secondBlock').addEventListener('click', (e) => {
 			document.location = 'detail.html?' + e.target.closest('[data-id]').dataset.id
 		})
+
+		function anime(type) {
+			let start = Date.now();
+
+			let timer = setInterval(function() {
+				let timePassed = Date.now() - start;
+
+				if (timePassed >= 2000) {
+					clearInterval(timer);
+					return;
+				}
+
+				document.getElementById(type).style.left = timePassed + 'px';
+
+			}, 20);
+		}
+
+		document.getElementById('videoPlayer').addEventListener("ended", (event) => {
+			if (autoplay) {
+				videoSwipe(Number(window.location.search.split('')[1]) + 1, 'next-video')
+			}
+		});
 	</script>
 </body>
 </html>

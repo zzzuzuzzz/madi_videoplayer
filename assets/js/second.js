@@ -21,10 +21,6 @@ class DB
                     mainDiv.dataset.id = result[0]
                     mainDiv.id = result[0]
 
-                    if (result[0] == window.location.search.split('')[1]) {
-                        mainDiv.style = 'background: grey'
-                    }
-
                     let a = document.createElement('div')
                     a.href = '/pages/detail.html?' + result[0]
                     a.className = 'card'
