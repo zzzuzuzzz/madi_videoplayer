@@ -1,0 +1,16 @@
+{
+  "one": {
+    "id": 5,
+    "title": "Видео 5",
+    "description": "опять природа 5",
+    "path": "video_5",
+    "type": "video"
+  },
+  "two": {
+    "id": 6,
+    "title": "Видео 6",
+    "description": "some text 6",
+    "path": "video_6",
+    "type": "video"
+  }
+}

@@ -5,41 +5,376 @@
     <title>RUS TUBE</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <script type="text/javascript" src="/assets/js/jquery.min.js"></script>
-    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <style>
+        .hidden {
+            display: none;
+        }
+
+        #cards-container {
+            display: flex;
+            flex-wrap: wrap; /* Разрешаем перенос на новую строку */
+            justify-content: space-around; /* Распределяем пространство между карточками */
+        }
+
+        #cards-container .card {
+            /* стили для каждой карточки */
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            width: calc(33.33% - 20px); /* Приблизительно 33.33% ширины контейнера, с учетом отступов */
+            box-sizing: border-box; /* Чтобы отступы не выходили за пределы ширины */
+        }
+
+        .card-img-top {
+            height: 80%;
+        }
+
+        /*  Медиа-запросы для адаптации под разные размеры экрана */
+        @media (max-width: 768px) {
+            #cards-container .card {
+                width: calc(50% - 10px); /* По две карточки в ряд на экранах меньше 768px */
+            }
+        }
+
+        @media (max-width: 480px) {
+            #cards-container .card {
+                width: calc(100% - 20px); /* По одной карточке в ряд на экранах меньше 480px */
+            }
+        }
+        .activeSidebarItem {
+            background: #0a53be20;
+        }
+    </style>
 </head>
-<body>
+<body style="height: 100vh">
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/index.html">RUS TUBE</a>
-            <button class="navbar-toggler" type="button">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/index.html">Главная страница</a>
-                    </li>
-                </ul>
-                <form class="d-flex" method="get" action="">
-                    <input class="form-control me-2" type="text" placeholder="Search">
-                    <button class="btn btn-outline-success" type="submit">Поиск</button>
-                </form>
-            </div>
+            <span class="navbar-brand">RUS TUBE</span>
         </div>
     </nav>
 
-    <div class="mainBlock p-3">
-        <div class="row" id="cardsField">
+    <div style="display: flex; justify-content: space-evenly; margin-top: 15px">
+        <div id="swiper-container" class="swiper-container hidden" style="width: 60vw; box-sizing: border-box; overflow: hidden; display: flex">
+            <div class="swiper-wrapper" id="swiper-wrapper-container" style="width: 50vw"></div>
+            <div class="swiper-button-prev hidden"></div>
+            <div class="swiper-button-next hidden"></div>
         </div>
+        <div id="navigation-container" class="hidden" style="height: 300px; overflow-y: auto"></div>
     </div>
+    <form class="m-5 hidden" id="button">
+        <input type="submit" value="автоплей">
+    </form>
+    <form class="m-5 hidden" id="relode">
+        <input type="submit" value="Вернуться в главное меню">
+    </form>
+    <div id="cards-container"></div>
 
-    <footer class="bg-body-tertiary text-center text-lg-start">
-        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
-            © 2024 Copyright: RUS TUBE, Inc. All Rights Reserved. Created by Talib
-        </div>
-    </footer>
+
+    </div>
+<!--    <img id="loaded" src="/assets/images/gif.gif" alt="Загрузка" style="position: absolute; z-index: 1000; height: 100%; width: 100%; top: 0">-->
 </body>
+<script>
+    class DB {
+        db = [];
+
+        readFile(fileType) {
+            return new Promise((resolve, reject) => {
+                switch (fileType) {
+                    case 'txt':
+                        const xhr = new XMLHttpRequest();
+                        xhr.open('GET', '/assets/DB.txt');
+                        xhr.onload = () => {
+                            if (xhr.status >= 200 && xhr.status < 300) {
+                                const array = xhr.response.split(';');
+                                const data = array.map(element => element.split('-/-'));
+                                resolve(data);
+                            } else {
+                                reject(new Error(`Ошибка загрузки TXT файла: ${xhr.status}`));
+                            }
+                        };
+                        xhr.onerror = () => reject(new Error('Ошибка загрузки TXT файла'));
+                        xhr.send();
+                        break;
+                    case 'xml':
+                        const xmlString = `
+                            <media>
+                              <item>
+                                <id>7</id>
+                                <title>Картинка 1</title>
+                                <description>some text 7</description>
+                                <path>video_6</path>
+                                <type>img</type>
+                              </item>
+                              <item>
+                                <id>8</id>
+                                <title>Картинка 8</title>
+                                <description>some text ewwewewfewfew 8</description>
+                                <path>video_2</path>
+                                <type>img</type>
+                              </item>
+                            </media>
+                          `;
+                        try {
+                            const parser = new DOMParser();
+                            const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+                            const items = xmlDoc.querySelectorAll('item');
+                            const data = Array.from(items).map(item => Array.from(item.children).map(child => child.textContent));
+                            resolve(data);
+                        } catch (error) {
+                            reject(new Error(`Ошибка разбора XML: ${error.message}`));
+                        }
+                        break;
+                    case 'json':
+                        const jsonData = {
+                            "one": {
+                                "id": 5,
+                                "title": "Видео 5",
+                                "description": "опять природа 5",
+                                "path": "video_5",
+                                "type": "video"
+                            },
+                            "two": {
+                                "id": 6,
+                                "title": "Видео 6",
+                                "description": "some text 6",
+                                "path": "video_6",
+                                "type": "video"
+                            }
+                        };
+                        const data = Object.values(jsonData).map(item => [
+                            item.id.toString(),
+                            item.title,
+                            item.description,
+                            item.path,
+                            item.type
+                        ]);
+                        resolve(data);
+                        break;
+                    default:
+                        reject(new Error(`Неподдерживаемый тип файла: ${fileType}`));
+                }
+            });
+        }
+
+        async loadAllData() {
+            try {
+                const txtData = await this.readFile('txt');
+                const jsonData = await this.readFile('json');
+                const xmlData = await this.readFile('xml');
+                this.db = [...txtData, ...jsonData, ...xmlData];
+            } catch (error) {
+                console.error("Ошибка загрузки данных:", error);
+            }
+        }
+    }
+    class CardRenderer {
+        renderCards(dataArray, containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) {
+                console.error(`Контейнер с ID "${containerId}" не найден.`);
+                return;
+            }
+
+            container.innerHTML = ''; // Очищаем контейнер
+
+            dataArray.forEach(item => {
+                if (item.length >= 4) { // Проверка на достаточное количество элементов в массиве
+                    const cardHTML = `
+                      <div class="card" data-card-id="${item[0]}">
+                        <img class="card-img-top" src="/assets/images/${item[3]}.png" alt="${item[1]}">
+                        <p>${item[1]}</p>
+                        <p>${item[2]}</p>
+                      </div>
+                    `;
+                    container.insertAdjacentHTML('beforeend', cardHTML);
+                } else {
+                    console.warn("Недостаточно элементов в массиве для создания карточки:", item);
+                }
+            });
+
+            // Добавляем обработчики кликов ПОСЛЕ отрисовки
+            this.addCardClickListeners(dataArray, containerId);
+        }
+
+        addCardClickListeners(dataArray, containerId) {
+            const cards = document.querySelectorAll(`#${containerId} .card`);
+            cards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const cardId = card.dataset.cardId;
+                    const selectedData = dataArray.find(item => item[0] === cardId);
+                    this.renderSwiper(selectedData, dataArray);
+                });
+            });
+        }
+
+
+        renderSwiper(selectedData, allData) {
+            const swiperContainer = document.getElementById('swiper-wrapper-container');
+            const navigationContainer = document.getElementById('navigation-container');
+
+            let select = selectedData[0] - 1;
+
+            document.getElementById('cards-container').innerHTML = ''; // Очищаем контейнер
+            document.getElementById('swiper-container').classList.remove('hidden');
+            document.getElementById('button').classList.remove('hidden');
+
+            if (!swiperContainer || !navigationContainer) {
+                console.error("Контейнер Swiper или контейнер навигации не найден.");
+                return;
+            }
+
+            swiperContainer.innerHTML = '';
+            navigationContainer.innerHTML = '';
+
+            const swiperSlides = allData.map( function (item) {
+                if (item[4] === 'video') {
+                    return `
+                      <div class="swiper-slide" style="height: 400px" data-card-id="${item[0]}">
+                        <div class="card">
+                          <video class="card-img-top" style="height: 300px" src="/assets/videos/${item[3]}.mp4" controls data-card-id="${item[0]}">
+                          <p style="margin-top: 500px">${item[1]}</p>
+                          <p>${item[2]}</p>
+                        </div>
+                      </div>
+                    `
+                } else if (item[4] === 'img') {
+                    return `
+                      <div class="swiper-slide" style="height: 400px" data-card-id="${item[0]}">
+                        <div class="card">
+                          <img class="card-img-top" style="height: 300px" src="/assets/images/${item[3]}.png">
+                          <p>${item[1]}</p>
+                          <p>${item[2]}</p>
+                        </div>
+                      </div>
+                    `
+                }
+            }).join('');
+
+
+            const navigationItems = allData.map(item => `
+                <div class="navigation-item d-flex mb-1 justify-content-between" style="border: 1px solid black; width: 200px" data-card-id="${item[0]}">
+                  <p>${item[1]}</p>
+                  <img src="/assets/images/${item[3]}.png" style="width: 100px; height: 50px">
+                </div>
+              `).join('');
+
+
+
+            swiperContainer.innerHTML = swiperSlides;
+            navigationContainer.innerHTML = navigationItems;
+
+            swiper = new Swiper('.swiper-container', {
+                direction: 'horizontal',
+                loop: true,
+                initialSlide: select,
+                autoplay: {
+                    delay: 5000,
+                },
+                navigation: {
+                    nextEl: ".swiper-button-next",
+                    prevEl: ".swiper-button-prev",
+                },
+            })
+
+            document.querySelector("video").addEventListener('ended', () => {
+                swiper.slideNext();
+            });
+
+            document.querySelector('.swiper-button-next').classList.remove('hidden')
+            document.querySelector('.swiper-button-prev').classList.remove('hidden')
+            document.getElementById('navigation-container').classList.remove('hidden');
+
+            this.updateNavigationHighlight(swiper, allData);
+
+            swiper.on('slideChange', () => {
+                this.updateNavigationHighlight(swiper, allData);
+            });
+
+            swiper.on('realIndexChange', (e) => {
+                document.querySelectorAll(`.navigation-item`).forEach(function (item) {
+                    item.classList.remove('activeSidebarItem')
+                })
+                if (swiper.activeIndex == 8) {
+                    document.querySelector(`#navigation-container .navigation-item[data-card-id="1"]`).scrollIntoView({ behavior: 'smooth', block: 'start' })
+                    document.querySelector(`#navigation-container .navigation-item[data-card-id="1"]`).classList.add('activeSidebarItem')
+                }
+                document.querySelector(`#navigation-container .navigation-item[data-card-id="${swiper.activeIndex + 1}"]`).scrollIntoView({ behavior: 'smooth', block: 'start' })
+                document.querySelector(`#navigation-container .navigation-item[data-card-id="${swiper.activeIndex + 1}"]`).classList.add('activeSidebarItem')
+            });
+
+
+        }
+
+
+        updateNavigationHighlight(swiper, dataArray) {
+            const navigationItems = document.querySelectorAll('#navigation-container .navigation-item');
+            navigationItems.forEach(item => item.classList.remove('active'));
+
+            const activeSlideIndex = swiper.activeIndex;
+
+            const activeCardId = swiper.slides[activeSlideIndex].querySelector('.card').dataset.cardId;
+
+
+            const activeNavItem = document.querySelector(`#navigation-container .navigation-item[data-card-id="${activeCardId}"]`);
+
+            if (activeNavItem) {
+                activeNavItem.classList.add('active');
+            }
+        }
+    }
+
+
+    const db = new DB();
+    // const loadedImage = document.getElementById('loaded');
+    const cardRenderer = new CardRenderer();
+    let swiper;
+    let autoplay = true;
+
+    document.querySelector(`#navigation-container`).addEventListener('click', function (e) {
+        if (e.target.dataset.cardId == undefined) {
+            return
+        }
+        swiper.slideTo(e.target.dataset.cardId)
+    });
+
+    document.getElementById('button').addEventListener('submit', function (e) {
+        e.preventDefault()
+        if (autoplay) {
+            autoplay = false
+            document.querySelectorAll("video").forEach(function (item) {
+                item.pause()
+            })
+            swiper.autoplay = false
+        } else {
+            autoplay = true;
+            document.querySelectorAll("video").forEach(function (item) {
+                item.play()
+            })
+            swiper.autoplay = {
+                delay: 5000,
+            }
+        }
+
+        console.log(autoplay)
+    })
+
+    document.getElementById('relode').addEventListener('submit', function (e) {
+        e.preventDefault()
+        window.location.reload()
+    })
+
+    db.loadAllData().then(() => {
+        console.log(db.db);
+        cardRenderer.renderCards(db.db, 'cards-container');
+        // setTimeout(function () {
+        //     loadedImage.classList.add('hidden');
+        // }, 500)
+    });
+</script>
 </html>

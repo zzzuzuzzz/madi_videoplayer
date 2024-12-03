@@ -1,0 +1,31 @@
+openapi: 3.0.0
+info:
+  title: Москвич - media-data
+  description: Описание API для media-data
+  version: 1.0.0
+servers:
+  - url: https://moskvich.ru
+tags:
+  - name: banners
+    description: Баннеры
+  - name: news
+    description: Новости
+  - name: videos
+    description: Видео обзоры
+paths:
+  /api/v1/mediacenter/news:
+    get:
+      tags:
+        - news
+      summary: Получить список новостей
+      operationId: getNews
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: integer
+                  format: int32

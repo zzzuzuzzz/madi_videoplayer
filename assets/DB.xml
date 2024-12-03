@@ -1,0 +1,16 @@
+<media>
+    <item>
+        <id>7</id>
+        <title>Картинка 1</title>
+        <description>some text 7</description>
+        <path>video_6</path>
+        <type>img</type>
+    </item>
+    <item>
+        <id>8</id>
+        <title>Картинка 8</title>
+        <description>some text ewwewewfewfew 8</description>
+        <path>video_2</path>
+        <type>img</type>
+    </item>
+</media>

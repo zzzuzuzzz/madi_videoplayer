@@ -1,10 +1,10 @@
 class DB 
 {
-    all()
+    all(type)
     {
         let xhr = new XMLHttpRequest();
 
-        xhr.open('GET', 'assets/DB.txt');
+        xhr.open('GET', 'assets/DB.' + type);
         xhr.send();
         xhr.onload = function() {
             if (xhr.status != 200) {
@@ -55,5 +55,7 @@ class DB
 };
 
 let dataBase = new DB;
-dataBase.all()
+dataBase.all('txt')
+dataBase.all('json')
+dataBase.all('xml')
 
