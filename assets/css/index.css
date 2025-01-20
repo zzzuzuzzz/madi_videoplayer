@@ -1,0 +1,67 @@
+.hidden {
+    display: none;
+}
+.activeSidebarItem {
+    background: #0a53be20;
+}
+
+
+.card {
+    width: 350px;
+    border: 1px solid black;
+    padding: 1px;
+}
+
+.card-img {
+    width: 340px;
+    height: 200px;
+}
+
+#btn-btn {
+    background-color: red;
+}
+#repet-btn {
+    background-color: green;
+}
+
+.swiper-button {
+    font-size: 40px
+}
+.main_div {
+    display: flex;
+    justify-content: space-evenly;
+}
+.swiper-container {
+    width: 50vw;
+}
+
+.swiper-wrapper {
+    width: 50vw;
+    height: 50vh;
+    overflow: auto
+}
+#navigation-container {
+    height: 300px;
+    overflow-y: auto
+}
+#cards-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.dop_fiv {
+    display: flex;
+}
+.card-img {
+    height: 300px;
+}
+.swiper-slide {
+    height: 400px;
+}
+.navigation-item {
+    border: 1px solid black;
+    width: 200px
+}
+.card-img-mini {
+    width: 100px; height: 50px
+}
