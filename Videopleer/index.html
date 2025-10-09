@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Видеоплеер с плейлистом</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="module" src="Script.js" defer></script>
+</head>
+<body>
+    <div class="player-container">
+        <div class="main" id="main">
+            <div class="video-player">
+                <img id="imagesContainer"/>
+                <video id="mainVideo" controls>
+                    <source type="video/mp4">
+                </video>
+            </div>
+            <div class="controls">
+                <button id="prevButton">Предыдущее</button>
+                <button id="autoplayButton">Autoplay</button>
+                <button id="nextButton">Следующее</button>
+            </div>
+        </div>
+        <div class="playlist">
+            <h3>Playlist content</h3>
+            <div class="thumbnails"></div>
+        </div>
+    </div>
+</body>
+</html>

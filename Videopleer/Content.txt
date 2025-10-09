@@ -1,0 +1,7 @@
+video: ./videos/video1.mp4, ./thumbnails/vid_pv1.png, Video Title 1
+image: ./images/image1.jpg, Image 1
+video: ./videos/video2.mp4, ./thumbnails/vid_pv2.png, Video Title 2
+image: ./images/image2.jpg, Image 2
+video: ./videos/video3.mp4, ./thumbnails/vid_pv3.png, Video Title 3
+image: ./images/image3.jpg, Image 3
+video: ./videos/video4.mp4, ./thumbnails/vid_pv4.png, Video Title 4
